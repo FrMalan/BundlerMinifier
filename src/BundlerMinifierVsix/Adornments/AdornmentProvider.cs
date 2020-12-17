@@ -74,49 +74,57 @@ namespace BundlerMinifierVsix
 
         private void CreateAdornments(ITextDocument document, IWpfTextView textView)
         {
-            string fileName = document.FilePath;
-
-            if (Path.GetFileName(fileName) == Constants.CONFIG_FILENAME)
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                LogoAdornment highlighter = new LogoAdornment(textView, _isVisible, _initOpacity);
-            }
-            else if (Path.IsPathRooted(fileName)) // Check that it's not a dynamic generated file
-            {
-                var item = BundlerMinifierPackage._dte?.Solution?.FindProjectItem(fileName);
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                if (item == null || item.ContainingProject == null)
-                    return;
+                string fileName = document.FilePath;
 
-                string configFile = item.ContainingProject.GetConfigFile();
-
-                if (string.IsNullOrEmpty(configFile))
-                    return;
-
-                string extension = Path.GetExtension(fileName.Replace(".map", ""));
-                string normalizedFilePath = fileName.Replace(".map", "").Replace(".min" + extension, extension);
-
-                try
+                if (Path.GetFileName(fileName) == Constants.CONFIG_FILENAME)
                 {
-                    var bundles = BundleHandler.GetBundles(configFile);
+                    LogoAdornment highlighter = new LogoAdornment(textView, _isVisible, _initOpacity);
+                }
+                else if (Path.IsPathRooted(fileName)) // Check that it's not a dynamic generated file
+                {
+                    var item = BundlerMinifierPackage._dte?.Solution?.FindProjectItem(fileName);
 
-                    foreach (Bundle bundle in bundles)
+                    if (item == null || item.ContainingProject == null)
+                        return;
+
+                    string configFile = item.ContainingProject.GetConfigFile();
+
+                    if (string.IsNullOrEmpty(configFile))
+                        return;
+
+                    string extension = Path.GetExtension(fileName.Replace(".map", ""));
+                    string normalizedFilePath = fileName.Replace(".map", "").Replace(".min" + extension, extension);
+
+                    try
                     {
-                        if (bundle.InputFiles.Count == 1 && bundle.InputFiles.First() == bundle.OutputFileName && !fileName.Contains(".min.") && !fileName.Contains(".map"))
-                            continue;
+                        var bundles = BundleHandler.GetBundles(configFile);
 
-                        if (bundle.GetAbsoluteOutputFile().Equals(normalizedFilePath, StringComparison.OrdinalIgnoreCase))
+                        foreach (Bundle bundle in bundles)
                         {
-                            GeneratedAdornment generated = new GeneratedAdornment(textView, _isVisible, _initOpacity);
-                            textView.Properties.AddProperty("generated", true);
-                            break;
+                            if (bundle.InputFiles.Count == 1 && bundle.InputFiles.First() == bundle.OutputFileName &&
+                                !fileName.Contains(".min.") && !fileName.Contains(".map"))
+                                continue;
+
+                            if (bundle.GetAbsoluteOutputFile()
+                                .Equals(normalizedFilePath, StringComparison.OrdinalIgnoreCase))
+                            {
+                                GeneratedAdornment generated =
+                                    new GeneratedAdornment(textView, _isVisible, _initOpacity);
+                                textView.Properties.AddProperty("generated", true);
+                                break;
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex);
-                }
-            }
+            });
         }
     }
 }

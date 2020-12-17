@@ -30,7 +30,7 @@ namespace BundlerMinifier
                 return true;
             }
 
-            Log.LogMessage(MessageImportance.High, Environment.NewLine + "Bundler: Begin processing " + configFile.Name);
+            Log.LogMessage(MessageImportance.High, Environment.NewLine + "Bundler:=> Begin processing " + configFile.Name);
 
             BundleFileProcessor processor = new BundleFileProcessor();
             processor.Processing += (s, e) => { RemoveReadonlyFlagFromFile(e.Bundle.GetAbsoluteOutputFile()); };
@@ -40,11 +40,11 @@ namespace BundlerMinifier
             processor.AfterWritingSourceMap += Processor_AfterWritingSourceMap;
             BundleMinifier.ErrorMinifyingFile += BundleMinifier_ErrorMinifyingFile;
             BundleMinifier.AfterWritingMinFile += FileMinifier_AfterWritingMinFile;
-            processor.MinificationSkipped += (s, e) => { Log.LogMessage(MessageImportance.Normal, "Bundler: No changes, skipping minification of " + e.OutputFileName); };
+            processor.MinificationSkipped += (s, e) => { Log.LogMessage(MessageImportance.Normal, "Bundler:=> No changes, skipping minification of " + e.OutputFileName); };
 
             processor.Process(configFile.FullName);
 
-            Log.LogMessage(MessageImportance.High, "Bundler: Done processing " + configFile.Name);
+            Log.LogMessage(MessageImportance.High, "Bundler:=> Done processing " + configFile.Name);
 
             return _isSuccessful;
         }
@@ -66,7 +66,7 @@ namespace BundlerMinifier
 
             foreach (var error in e.Result.Errors)
             {
-                Log.LogError("Bundler & Minifier", "0", "", error.FileName, error.LineNumber, error.ColumnNumber, error.LineNumber, error.ColumnNumber, error.Message, null); ;
+                Log.LogError("Bundler & Minifier (OUT)", "0", "", error.FileName, error.LineNumber, error.ColumnNumber, error.LineNumber, error.ColumnNumber, error.Message, null); ;
             }
         }
 

@@ -29,7 +29,7 @@ namespace BundlerMinifierVsix
         public static Task IsPackageInitialized
         {
             get { return _package.Task; }
-        } 
+        }
 
         public static Options Options { get; private set; }
 
@@ -40,7 +40,7 @@ namespace BundlerMinifierVsix
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
             _instance = this;
-            
+
             _dispatcher = Dispatcher.CurrentDispatcher;
             Options = (Options)GetDialogPage(typeof(Options));
 
@@ -68,12 +68,15 @@ namespace BundlerMinifierVsix
 
         public static bool IsDocumentDirty(string documentPath, out IVsPersistDocData persistDocData)
         {
-            var serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)_dte);
+            var serviceProvider = ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)_dte);
+            });
 
             IVsHierarchy vsHierarchy;
             uint itemId, docCookie;
-            VsShellUtilities.GetRDTDocumentInfo(
-                serviceProvider, documentPath, out vsHierarchy, out itemId, out persistDocData, out docCookie);
+            VsShellUtilities.GetRDTDocumentInfo(serviceProvider, documentPath, out vsHierarchy, out itemId, out persistDocData, out docCookie);
             if (persistDocData != null)
             {
                 int isDirty;

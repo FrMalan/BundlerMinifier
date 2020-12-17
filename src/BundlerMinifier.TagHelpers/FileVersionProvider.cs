@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Antiforgery.Internal;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
@@ -112,14 +110,11 @@ namespace BundlerMinifier.TagHelpers
 
         private static string GetHashForFile(IFileInfo fileInfo)
         {
-            using (var sha256 = CryptographyAlgorithms.CreateSHA256())
-            {
-                using (var readStream = fileInfo.CreateReadStream())
-                {
-                    var hash = sha256.ComputeHash(readStream);
-                    return WebEncoders.Base64UrlEncode(hash);
-                }
-            }
+            using var sha256 = SHA256.Create();
+            using var readStream = fileInfo.CreateReadStream();
+            var hash = sha256.ComputeHash(readStream);
+            
+            return WebEncoders.Base64UrlEncode(hash);
         }
     }
 }

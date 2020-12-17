@@ -181,15 +181,14 @@ namespace BundlerMinifierVsix
         private static async void HandleProcessingException(string configFile, Exception ex)
         {
             await BundlerMinifierPackage.IsPackageInitialized;
-            BundlerMinifierPackage._dispatcher.Invoke(new Action(() =>
-            {
-                var errorMessage = Resources.Text.ErrorExceptionThrown
-                    .AddParams(configFile, ex);
-                Logger.Log(errorMessage);
 
-                var window = _dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
-                window.Activate();
-            }));
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var errorMessage = Resources.Text.ErrorExceptionThrown
+                .AddParams(configFile, ex);
+            Logger.Log(errorMessage);
+
+            var window = _dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            window.Activate();
         }
 
         private static void CheckFileOutOfSourceControl(object sender, MinifyFileEventArgs e)

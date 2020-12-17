@@ -10,7 +10,7 @@
       <Menu guid="guidBundlerCmdSet" id="MyMenu" priority="0x0100" type="Menu">
         <Parent guid="guidBundlerCmdSet" id="ContextMenuGroup" />
         <Strings>
-          <ButtonText>Bundler &amp;&amp; Minifier</ButtonText>
+          <ButtonText>Bundler &amp;&amp; Minifier (OUT)</ButtonText>
         </Strings>
       </Menu>
     </Menus>

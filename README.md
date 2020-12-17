@@ -7,9 +7,7 @@ minification of JS, CSS and HTML files.
 [![NuGet](https://img.shields.io/nuget/v/BuildBundlerMinifier.svg?style=flat)](https://www.nuget.org/packages/BuildBundlerMinifier/) 
 
 Download the extension at the
-[VS Gallery](https://visualstudiogallery.msdn.microsoft.com/9ec27da7-e24b-4d56-8064-fd7e88ac1c40)
-or get the
-[nightly build](http://vsixgallery.com/extension/a0ae318b-4f07-4f71-93cb-f21d3f03c6d3/)
+[ProGet Gallery](https://visualstudiogallery.msdn.microsoft.com/7973f4ce-6596-4b28-8407-2e64ecfbc707)
 
 ---------------------------------------
 

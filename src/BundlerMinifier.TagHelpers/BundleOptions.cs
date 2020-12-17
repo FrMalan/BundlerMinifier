@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
-#if NETSTANDARD2_0
-using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Microsoft.Extensions.Hosting;
+#if NETSTANDARD2_0 || NET5_0
 #else
 using Microsoft.Extensions.Hosting;
 #endif
